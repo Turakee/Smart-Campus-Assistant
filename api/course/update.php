@@ -36,6 +36,14 @@ try {
         jsonResponse([], false, "Course name \"{$name}\" is already used by another course", 409);
     }
 
+    $deptId = isset($data['department_id']) ? (int)$data['department_id'] : null;
+    if ($deptId === null && !empty($data['department_name'])) {
+        $deptStmt = $db->prepare("SELECT department_id FROM departments WHERE department_name = :name");
+        $deptStmt->execute([':name' => $data['department_name']]);
+        $deptRow = $deptStmt->fetch();
+        $deptId = $deptRow ? (int)$deptRow['department_id'] : null;
+    }
+
     $stmt = $db->prepare("UPDATE courses SET course_code = :code, course_name = :name, credit_hours = :credits, lecturer_name = :lecturer, department_id = :dept_id WHERE course_id = :id");
     $stmt->execute([
         ':id' => $courseId,
@@ -43,7 +51,7 @@ try {
         ':name' => $name,
         ':credits' => isset($data['credit_hours']) ? (int)$data['credit_hours'] : null,
         ':lecturer' => isset($data['lecturer_name']) ? trim($data['lecturer_name']) : null,
-        ':dept_id' => isset($data['department_id']) ? (int)$data['department_id'] : null,
+        ':dept_id' => $deptId,
     ]);
 
     if ($stmt->rowCount() === 0) {

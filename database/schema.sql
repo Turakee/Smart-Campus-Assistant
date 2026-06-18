@@ -50,14 +50,18 @@ CREATE TABLE IF NOT EXISTS departments (
 ) ENGINE=InnoDB;
 
 INSERT IGNORE INTO departments (department_name, department_code) VALUES
-('Computer Science', 'CSC'),
-('Mathematics', 'MTH'),
-('General Studies', 'GST'),
-('Physics', 'PHY'),
-('Chemistry', 'CHM'),
-('Biology', 'BIO'),
+('Artificial Intelligence', 'AI'),
+('Arts', 'ART'),
+('Business Administration', 'BUS'),
+('Computer Engineering', 'CE'),
+('Computer Science', 'CS'),
+('Cyber Security', 'CYS'),
+('Data Science', 'DS'),
 ('Engineering', 'ENG'),
-('Business Admin', 'BUS');
+('Information Systems', 'IS'),
+('Information Technology', 'IT'),
+('Science', 'SCI'),
+('Software Engineering', 'SWE');
 
 -- 5. Courses Table
 CREATE TABLE IF NOT EXISTS courses (

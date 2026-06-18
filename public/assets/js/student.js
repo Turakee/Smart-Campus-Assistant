@@ -432,12 +432,41 @@ async function runAttendancePrediction() {
                 ` : ''}
                 ${d.ai_engine_used ? '<small style="display:block;margin-top:8px;color:var(--gray);"><i class="fas fa-microchip"></i> Powered by AI Engine</small>' : ''}
             `;
+            updateStatCards(d, riskColors, riskLabels);
+            if (d.recommendations && d.recommendations.length > 0) {
+                updateRecommendations(d.recommendations);
+            }
         } else {
             resultDiv.innerHTML = '<div class="empty-state text-danger"><p>' + (data.message || 'Prediction failed') + '</p></div>';
         }
     } catch (e) {
         resultDiv.innerHTML = '<div class="empty-state text-danger"><p>Failed to run prediction</p></div>';
     }
+}
+
+function updateStatCards(d, riskColors, riskLabels) {
+    const aiScoreEl = document.getElementById('aiScore');
+    const attPctEl = document.getElementById('attendancePercent');
+    const riskEl = document.getElementById('riskLevel');
+    if (aiScoreEl) aiScoreEl.textContent = d.attendance_percentage + '%';
+    if (attPctEl) attPctEl.textContent = d.attendance_percentage + '%';
+    if (riskEl) {
+        riskEl.textContent = riskLabels && riskLabels[d.risk_level] ? riskLabels[d.risk_level] : d.risk_level;
+        riskEl.style.color = (riskColors && riskColors[d.risk_level]) ? riskColors[d.risk_level] : '#6366f1';
+    }
+}
+
+function updateRecommendations(items) {
+    const list = document.getElementById('recommendationList');
+    if (!list) return;
+    if (list.querySelector('li.placeholder')) {
+        list.innerHTML = '';
+    }
+    items.forEach(r => {
+        const li = document.createElement('li');
+        li.innerHTML = '<i class="fas fa-lightbulb" style="color:var(--primary);"></i> ' + escapeHtml(r);
+        list.appendChild(li);
+    });
 }
 
 async function runScheduleOptimization() {
@@ -469,6 +498,8 @@ async function runScheduleOptimization() {
             }
             html += d.ai_engine_used ? '<small style="display:block;margin-top:8px;color:var(--gray);"><i class="fas fa-microchip"></i> Powered by AI Engine</small>' : '';
             resultDiv.innerHTML = html;
+            const optScoreEl = document.getElementById('optimizationScore');
+            if (optScoreEl) optScoreEl.textContent = (d.optimization_score || 0) + '/100';
         } else {
             resultDiv.innerHTML = '<div class="empty-state text-danger"><p>' + (data.message || 'Optimization failed') + '</p></div>';
         }
@@ -506,6 +537,9 @@ async function runPerformancePrediction() {
                 ` : ''}
                 ${d.ai_engine_used ? '<small style="display:block;margin-top:8px;color:var(--gray);"><i class="fas fa-microchip"></i> Powered by AI Engine</small>' : ''}
             `;
+            if (d.recommendations && d.recommendations.length > 0) {
+                updateRecommendations(d.recommendations);
+            }
         } else {
             resultDiv.innerHTML = '<div class="empty-state text-danger"><p>' + (data.message || 'Prediction failed') + '</p></div>';
         }
@@ -514,51 +548,14 @@ async function runPerformancePrediction() {
     }
 }
 
-// ===== EXCUSE MODAL =====
-
-function openExcuseModal(attendanceId, courseName, date, status) {
-    document.getElementById('excuseAttendanceId').value = attendanceId;
-    document.getElementById('excuseCourseName').textContent = courseName;
-    document.getElementById('excuseDate').textContent = new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    document.getElementById('excuseStatus').textContent = capitalize(status);
-    document.getElementById('excuseReason').value = '';
-    document.getElementById('excuseResult').style.display = 'none';
-    document.getElementById('excuseModal').style.display = 'block';
-}
-
-function closeExcuseModal() {
-    document.getElementById('excuseModal').style.display = 'none';
-}
-
-document.addEventListener('submit', async function(e) {
-    if (e.target && e.target.id === 'excuseForm') {
-        e.preventDefault();
-        const btn = document.getElementById('excuseBtn');
-        const result = document.getElementById('excuseResult');
-        btn.disabled = true;
-        btn.innerHTML = '<div class="loading-spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
-
-        const data = await apiCall('../../api/attendance/excuse-submit.php', {
-            method: 'POST',
-            body: JSON.stringify({
-                attendance_id: parseInt(document.getElementById('excuseAttendanceId').value),
-                reason: document.getElementById('excuseReason').value.trim()
-            })
-        });
-
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Excuse';
-
-        result.style.display = 'block';
-        if (data.success) {
-            result.innerHTML = '<i class="fas fa-check-circle"></i> Excuse submitted. Attendance updated to excused.';
-            result.style.background = '#dcfce7';
-            result.style.color = '#166534';
-            setTimeout(() => { closeExcuseModal(); loadAttendance(); }, 1500);
-        } else {
-            result.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (data.message || 'Failed to submit excuse');
-            result.style.background = '#fee2e2';
-            result.style.color = '#991b1b';
-        }
+function loadAIInsights() {
+    const list = document.getElementById('recommendationList');
+    if (list) {
+        list.innerHTML = '<li class="placeholder" style="color:var(--gray);"><i class="fas fa-sync fa-spin"></i> Loading recommendations...</li>';
     }
-});
+    runAttendancePrediction();
+    runScheduleOptimization();
+    runPerformancePrediction();
+}
+
+

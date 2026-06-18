@@ -1889,12 +1889,18 @@ $user_name = $_SESSION['name'];
                 .catch(error => console.warn('Could not load monitor metrics:', error));
         }
 
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
         function showUserManagement() {
+            closeAllModals();
             document.getElementById('userManagementModalOverlay').classList.add('active');
             loadUsers();
         }
 
         function showSystemMonitoring() {
+            closeAllModals();
             document.getElementById('systemMonitoringModalOverlay').classList.add('active');
             loadSystemMonitor();
         }
@@ -1985,12 +1991,14 @@ $user_name = $_SESSION['name'];
                             if (services[key]) {
                                 const service = services[key];
                                 const info = serviceNames[key];
-                                const statusClass = service.status === 'healthy' ? 'online' :
-                                                   service.status === 'warning' ? 'warning' :
-                                                   service.status === 'critical' ? 'offline' : 'warning';
+                                const statusClass = service.status === 'healthy' || service.status === 'idle' ? 'online' :
+                                                    service.status === 'warning' ? 'warning' :
+                                                    service.status === 'critical' ? 'offline' : 'warning';
                                 const displayStatus = service.status === 'healthy' ? 'Healthy' :
-                                                     service.status === 'warning' ? 'Warning' :
-                                                     service.status === 'critical' ? 'Critical' : 'Unknown';
+                                                      service.status === 'idle' ? 'Idle' :
+                                                      service.status === 'unavailable' ? 'Unavailable' :
+                                                      service.status === 'warning' ? 'Warning' :
+                                                      service.status === 'critical' ? 'Critical' : 'Unknown';
                                 
                                 const html = `
                                     <div class="service-item">
@@ -2018,11 +2026,13 @@ $user_name = $_SESSION['name'];
         }
 
         function showDatabaseBackup() {
+            closeAllModals();
             document.getElementById('databaseBackupModalOverlay').classList.add('active');
             loadBackupHistory();
         }
 
         function showSystemSettings() {
+            closeAllModals();
             document.getElementById('systemSettingsModalOverlay').classList.add('active');
             loadSettingsModal();
         }
@@ -2418,10 +2428,10 @@ $user_name = $_SESSION['name'];
             setInterval(updateClock, 1000);
             setInterval(loadSystemHealth, 30000); // Refresh system health every 30 seconds
             setInterval(() => {
-                // Refresh dashboard metrics periodically
-                const statsBtn = document.querySelector('[onclick*="loadSystemStats"]');
-                if (!statsBtn) loadSystemStats(); // Only refresh if not in a modal
-            }, 60000); // Refresh stats every 60 seconds
+                if (document.querySelectorAll('.modal-overlay.active').length === 0) {
+                    loadSystemStats();
+                }
+            }, 60000);
             if (typeof initNotificationForms === 'function') initNotificationForms();
 
             document.getElementById('settingsForm').addEventListener('submit', function(e) {
@@ -2437,8 +2447,8 @@ $user_name = $_SESSION['name'];
                     alert('System name is required.');
                     return;
                 }
-                if (maxLoginAttempts < 1 || maxLoginAttempts > 100) {
-                    alert('Max login attempts must be between 1 and 100.');
+                if (maxLoginAttempts < 1 || maxLoginAttempts > 20) {
+                    alert('Max login attempts must be between 1 and 20.');
                     return;
                 }
                 if (sessionTimeout < 1 || sessionTimeout > 1440) {

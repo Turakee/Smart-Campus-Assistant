@@ -32,14 +32,34 @@ try {
 
     $user_id = (int)$student['user_id'];
 
+    $db->beginTransaction();
+
+    $delStmt = $db->prepare("DELETE FROM ai_analytics_log WHERE student_id = :sid");
+    $delStmt->execute([':sid' => $student_id]);
+    $delStmt = $db->prepare("DELETE FROM attendance WHERE student_id = :sid");
+    $delStmt->execute([':sid' => $student_id]);
+    $delStmt = $db->prepare("DELETE FROM student_courses WHERE student_id = :sid");
+    $delStmt->execute([':sid' => $student_id]);
+    $delStmt = $db->prepare("DELETE FROM bookings WHERE student_id = :sid");
+    $delStmt->execute([':sid' => $student_id]);
+    $delStmt = $db->prepare("DELETE FROM notifications WHERE user_id = :uid");
+    $delStmt->execute([':uid' => $user_id]);
+    $delStmt = $db->prepare("DELETE FROM students WHERE student_id = :sid");
+    $delStmt->execute([':sid' => $student_id]);
+
     $stmtDelete = $db->prepare('DELETE FROM users WHERE user_id = :user_id');
     $stmtDelete->execute([':user_id' => $user_id]);
 
     if ($stmtDelete->rowCount() === 0) {
+        $db->rollBack();
         jsonResponse([], false, 'Failed to delete student account', 500);
     }
 
+    $db->commit();
     jsonResponse([], true, 'Student account deleted');
 } catch (Exception $e) {
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
     jsonResponse([], false, 'Server error: ' . $e->getMessage(), 500);
 }

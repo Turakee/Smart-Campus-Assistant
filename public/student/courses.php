@@ -16,10 +16,14 @@ $stmt->execute([':uid' => $_SESSION['user_id']]);
 $student = $stmt->fetch();
 $studentDeptId = null;
 if ($student && !empty($student['department'])) {
-    $deptStmt = $db->prepare("SELECT department_id FROM departments WHERE department_name = :name");
-    $deptStmt->execute([':name' => $student['department']]);
-    $deptRow = $deptStmt->fetch();
-    $studentDeptId = $deptRow ? $deptRow['department_id'] : null;
+    try {
+        $deptStmt = $db->prepare("SELECT department_id FROM departments WHERE department_name = :name");
+        $deptStmt->execute([':name' => $student['department']]);
+        $deptRow = $deptStmt->fetch();
+        $studentDeptId = $deptRow ? $deptRow['department_id'] : null;
+    } catch (Exception $e) {
+        $studentDeptId = null;
+    }
 }
 ?>
 <!DOCTYPE html>

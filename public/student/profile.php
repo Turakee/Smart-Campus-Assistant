@@ -125,15 +125,18 @@ if (!$profile) {
                                     <label><i class="fas fa-building"></i> Department</label>
                                     <select id="editDepartment" class="form-control">
                                         <option value="">Select Department</option>
-                                        <option value="Computer Science" <?php echo $profile['department'] === 'Computer Science' ? 'selected' : ''; ?>>Computer Science</option>
-                                        <option value="Information Technology" <?php echo $profile['department'] === 'Information Technology' ? 'selected' : ''; ?>>Information Technology</option>
-                                        <option value="Software Engineering" <?php echo $profile['department'] === 'Software Engineering' ? 'selected' : ''; ?>>Software Engineering</option>
-                                        <option value="Data Science" <?php echo $profile['department'] === 'Data Science' ? 'selected' : ''; ?>>Data Science</option>
-                                        <option value="Cyber Security" <?php echo $profile['department'] === 'Cyber Security' ? 'selected' : ''; ?>>Cyber Security</option>
-                                        <option value="Business Administration" <?php echo $profile['department'] === 'Business Administration' ? 'selected' : ''; ?>>Business Administration</option>
-                                        <option value="Engineering" <?php echo $profile['department'] === 'Engineering' ? 'selected' : ''; ?>>Engineering</option>
-                                        <option value="Science" <?php echo $profile['department'] === 'Science' ? 'selected' : ''; ?>>Science</option>
+                                        <option value="Artificial Intelligence" <?php echo $profile['department'] === 'Artificial Intelligence' ? 'selected' : ''; ?>>Artificial Intelligence</option>
                                         <option value="Arts" <?php echo $profile['department'] === 'Arts' ? 'selected' : ''; ?>>Arts</option>
+                                        <option value="Business Administration" <?php echo $profile['department'] === 'Business Administration' ? 'selected' : ''; ?>>Business Administration</option>
+                                        <option value="Computer Engineering" <?php echo $profile['department'] === 'Computer Engineering' ? 'selected' : ''; ?>>Computer Engineering</option>
+                                        <option value="Computer Science" <?php echo $profile['department'] === 'Computer Science' ? 'selected' : ''; ?>>Computer Science</option>
+                                        <option value="Cyber Security" <?php echo $profile['department'] === 'Cyber Security' ? 'selected' : ''; ?>>Cyber Security</option>
+                                        <option value="Data Science" <?php echo $profile['department'] === 'Data Science' ? 'selected' : ''; ?>>Data Science</option>
+                                        <option value="Engineering" <?php echo $profile['department'] === 'Engineering' ? 'selected' : ''; ?>>Engineering</option>
+                                        <option value="Information Systems" <?php echo $profile['department'] === 'Information Systems' ? 'selected' : ''; ?>>Information Systems</option>
+                                        <option value="Information Technology" <?php echo $profile['department'] === 'Information Technology' ? 'selected' : ''; ?>>Information Technology</option>
+                                        <option value="Science" <?php echo $profile['department'] === 'Science' ? 'selected' : ''; ?>>Science</option>
+                                        <option value="Software Engineering" <?php echo $profile['department'] === 'Software Engineering' ? 'selected' : ''; ?>>Software Engineering</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

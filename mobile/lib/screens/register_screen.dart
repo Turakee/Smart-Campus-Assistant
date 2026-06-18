@@ -25,14 +25,18 @@ class _RegisterScreenState extends State<RegisterScreen>
   late Animation<Offset> _slideAnim;
 
   final List<String> _departments = [
-    'Computer Science',
-    'Information Technology',
-    'Software Engineering',
-    'Data Science',
-    'Cyber Security',
     'Artificial Intelligence',
+    'Arts',
+    'Business Administration',
     'Computer Engineering',
+    'Computer Science',
+    'Cyber Security',
+    'Data Science',
+    'Engineering',
     'Information Systems',
+    'Information Technology',
+    'Science',
+    'Software Engineering',
   ];
 
   final List<int> _levels = [100, 200, 300, 400, 500];

@@ -192,10 +192,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
                         <i class="fas fa-sync"></i> Refresh Analysis
                     </button>
                 </div>
-                <div id="attendanceInsight" class="insight-card">
+                <div id="predictionResult" class="insight-card">
                     <div class="notification-empty">
                         <div class="loading-spinner"></div>
-                        <p>Click refresh to analyze your attendance</p>
+                        <p>Analyzing your attendance...</p>
                     </div>
                 </div>
             </div>
@@ -207,10 +207,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
                         <i class="fas fa-wand-magic-sparkles"></i> Optimize Now
                     </button>
                 </div>
-                <div id="scheduleInsight" class="insight-card">
+                <div id="optimizationResult" class="insight-card">
                     <div class="notification-empty">
-                        <i class="fas fa-calendar-alt" style="font-size: 48px;"></i>
-                        <p>Click optimize to analyze your schedule</p>
+                        <div class="loading-spinner"></div>
+                        <p>Analyzing your schedule...</p>
                     </div>
                 </div>
             </div>
@@ -222,10 +222,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
                         <i class="fas fa-sync"></i> Predict Grade
                     </button>
                 </div>
-                <div id="performanceInsight" class="insight-card">
+                <div id="performanceResult" class="insight-card">
                     <div class="notification-empty">
-                        <i class="fas fa-chart-line" style="font-size: 48px;"></i>
-                        <p>Click predict to analyze your academic performance</p>
+                        <div class="loading-spinner"></div>
+                        <p>Predicting your academic performance...</p>
                     </div>
                 </div>
             </div>
@@ -237,7 +237,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
                 <ul class="recommendation-list" id="recommendationList">
                     <li style="color: var(--gray);">
                         <i class="fas fa-info-circle" style="color: var(--gray);"></i>
-                        Run the attendance analysis to get personalized recommendations
+                        Analyzing your data for personalized recommendations...
                     </li>
                 </ul>
             </div>
@@ -271,6 +271,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
     <script src="../assets/js/student.js?v=<?php echo filemtime('../assets/js/student.js'); ?>"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAIInsights();
+        });
+
         async function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const query = input.value.trim();

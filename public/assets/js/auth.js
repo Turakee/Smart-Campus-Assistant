@@ -7,7 +7,7 @@ function switchTab(tab) {
     const btns = document.querySelectorAll('.tab-btn');
     if (tab === 'login' && btns[0]) btns[0].classList.add('active');
     if (tab === 'register' && btns[1]) btns[1].classList.add('active');
-    if (tab === 'register') { toggleStudentFields(); loadDepartments(); }
+    if (tab === 'register') toggleStudentFields();
 }
 
 function toggleStudentFields() {
@@ -15,19 +15,6 @@ function toggleStudentFields() {
     const isStudent = role === 'student';
     document.getElementById('deptGroup').style.display = isStudent ? 'block' : 'none';
     document.getElementById('levelGroup').style.display = isStudent ? 'block' : 'none';
-}
-
-async function loadDepartments() {
-    const sel = document.getElementById('regDept');
-    if (!sel || sel.options.length > 1) return;
-    try {
-        const res = await fetch(API_BASE + 'api/department/list.php');
-        const data = await res.json();
-        if (data.success && data.data) {
-            sel.innerHTML = '<option value="">Select Department (Optional)</option>' +
-                data.data.map(d => '<option value="' + d.department_name + '">' + d.department_name + '</option>').join('');
-        }
-    } catch (e) { console.error('Failed to load departments', e); }
 }
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {

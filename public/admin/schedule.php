@@ -1,14 +1,24 @@
 <?php
 require_once '../../config/config.php';
-require_once '../../config/database.php';
 requireAuth();
 requireRole(['administrator']);
 
 $user_name = $_SESSION['name'];
 
-$database = new Database();
-$db = $database->getConnection();
-$depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetchAll();
+$departments = [
+    ['name' => 'Artificial Intelligence', 'code' => 'AI'],
+    ['name' => 'Arts', 'code' => 'Arts'],
+    ['name' => 'Business Administration', 'code' => 'Bus Admin'],
+    ['name' => 'Computer Engineering', 'code' => 'CompEng'],
+    ['name' => 'Computer Science', 'code' => 'CS'],
+    ['name' => 'Cyber Security', 'code' => 'CyberSec'],
+    ['name' => 'Data Science', 'code' => 'DataSci'],
+    ['name' => 'Engineering', 'code' => 'ENG'],
+    ['name' => 'Information Systems', 'code' => 'InfoSys'],
+    ['name' => 'Information Technology', 'code' => 'IT'],
+    ['name' => 'Science', 'code' => 'Science'],
+    ['name' => 'Software Engineering', 'code' => 'SWEng']
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -137,8 +147,8 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
                             <label><i class="fas fa-building"></i> Department</label>
                             <select id="formDept" class="form-control" onchange="filterCoursesByDept()" required>
                                 <option value="">Select Department</option>
-                                <?php foreach ($depts as $d): ?>
-                                <option value="<?php echo $d['department_id']; ?>"><?php echo htmlspecialchars($d['department_name']); ?> (<?php echo htmlspecialchars($d['department_code']); ?>)</option>
+                                <?php foreach ($departments as $d): ?>
+                                <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?> (<?php echo htmlspecialchars($d['code']); ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -194,8 +204,8 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
                         </div>
                         <select id="deptFilter" onchange="filterByDept()">
                             <option value="">All Departments</option>
-                            <?php foreach ($depts as $d): ?>
-                            <option value="<?php echo $d['department_id']; ?>"><?php echo htmlspecialchars($d['department_name']); ?></option>
+                            <?php foreach ($departments as $d): ?>
+                            <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -251,13 +261,13 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
         }
 
         function filterCoursesByDept() {
-            const deptId = document.getElementById('formDept').value;
+            const deptName = document.getElementById('formDept').value;
             const select = document.getElementById('formCourse');
-            if (!deptId) {
+            if (!deptName) {
                 select.innerHTML = '<option value="">Select Department First</option>';
                 return;
             }
-            const filtered = allCourses.filter(c => c.department_id == deptId);
+            const filtered = allCourses.filter(c => c.department_name == deptName);
             select.innerHTML = '<option value="">Select Course</option>' +
                 filtered.map(c => `<option value="${c.course_id}">${escapeHtml(c.course_name)} (${escapeHtml(c.course_code)})</option>`).join('');
         }
@@ -280,9 +290,7 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
         async function fetchSchedules() {
             showSkeleton();
             try {
-                const dept = document.getElementById('deptFilter').value;
-                const url = dept ? `../../api/schedule/get.php?department_id=${dept}` : '../../api/schedule/get.php';
-                const res = await fetch(url);
+                const res = await fetch('../../api/schedule/get.php');
                 const data = await res.json();
                 if (data.success) {
                     schedulesData = data.data;
@@ -300,7 +308,7 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
 
         function updateStats() {
             document.getElementById('totalSchedules').textContent = schedulesData.length;
-            const deptSet = new Set(schedulesData.map(s => s.department_id).filter(Boolean));
+            const deptSet = new Set(schedulesData.map(s => s.department_name).filter(Boolean));
             document.getElementById('totalDeptSche').textContent = deptSet.size;
             const courseSet = new Set(schedulesData.map(s => s.course_id));
             document.getElementById('totalCourses').textContent = courseSet.size;
@@ -323,8 +331,12 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
         function renderSchedules() {
             const container = document.getElementById('scheduleContainer');
             const query = document.getElementById('scheduleSearch').value.toLowerCase().trim();
+            const deptFilter = document.getElementById('deptFilter').value;
 
             let filtered = schedulesData;
+            if (deptFilter) {
+                filtered = filtered.filter(s => s.department_name == deptFilter);
+            }
             if (query) {
                 filtered = filtered.filter(s =>
                     (s.course_name + ' ' + s.course_code + ' ' + s.day_of_week + ' ' + s.start_time + ' ' + s.end_time + ' ' + (s.room_number || '') + ' ' + (s.department_name || '')).toLowerCase().includes(query)
@@ -403,13 +415,13 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
             container.innerHTML = html;
         }
 
-        function filterByDept() { fetchSchedules(); }
+        function filterByDept() { renderSchedules(); }
 
         function editSchedule(id) {
             const s = schedulesData.find(x => x.schedule_id == id);
             if (!s) return;
             document.getElementById('scheduleId').value = s.schedule_id;
-            document.getElementById('formDept').value = s.department_id || '';
+            document.getElementById('formDept').value = s.department_name || '';
             filterCoursesByDept();
             document.getElementById('formCourse').value = s.course_id;
             document.getElementById('formDay').value = s.day_of_week;

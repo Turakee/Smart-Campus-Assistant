@@ -207,6 +207,9 @@ if ($db) {
                                 <option value="Software Engineering">Software Engineering</option>
                                 <option value="Data Science">Data Science</option>
                                 <option value="Cyber Security">Cyber Security</option>
+                                <option value="Artificial Intelligence">Artificial Intelligence</option>
+                                <option value="Computer Engineering">Computer Engineering</option>
+                                <option value="Information Systems">Information Systems</option>
                                 <option value="Business Administration">Business Administration</option>
                                 <option value="Engineering">Engineering</option>
                                 <option value="Arts">Arts</option>

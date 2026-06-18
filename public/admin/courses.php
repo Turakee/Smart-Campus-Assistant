@@ -1,14 +1,9 @@
 <?php
 require_once '../../config/config.php';
-require_once '../../config/database.php';
 requireAuth();
 requireRole(['administrator']);
 
 $user_name = $_SESSION['name'];
-
-$database = new Database();
-$db = $database->getConnection();
-$depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -129,9 +124,18 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
                                 <label><i class="fas fa-building"></i> Department</label>
                                 <select id="courseDepartment" class="form-control" required>
                                     <option value="">Select Department</option>
-                                    <?php foreach ($depts as $d): ?>
-                                    <option value="<?php echo $d['department_id']; ?>"><?php echo htmlspecialchars($d['department_name']); ?> (<?php echo htmlspecialchars($d['department_code']); ?>)</option>
-                                    <?php endforeach; ?>
+                                    <option value="Artificial Intelligence">Artificial Intelligence</option>
+                                    <option value="Arts">Arts</option>
+                                    <option value="Business Administration">Business Administration</option>
+                                    <option value="Computer Engineering">Computer Engineering</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Cyber Security">Cyber Security</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Information Systems">Information Systems</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Science">Science</option>
+                                    <option value="Software Engineering">Software Engineering</option>
                                 </select>
                             </div>
                         </div>
@@ -156,9 +160,18 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
                         </div>
                         <select id="deptFilter" onchange="filterCourses()" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;">
                             <option value="">All Departments</option>
-                            <?php foreach ($depts as $d): ?>
-                            <option value="<?php echo $d['department_id']; ?>"><?php echo htmlspecialchars($d['department_name']); ?></option>
-                            <?php endforeach; ?>
+                            <option value="Artificial Intelligence">Artificial Intelligence</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Business Administration">Business Administration</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Cyber Security">Cyber Security</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Information Systems">Information Systems</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Science">Science</option>
+                            <option value="Software Engineering">Software Engineering</option>
                         </select>
                     </div>
                     <div class="table-wrap">
@@ -251,7 +264,7 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
             const query = document.getElementById('courseSearch').value.toLowerCase().trim();
             const deptId = document.getElementById('deptFilter').value;
             let filtered = coursesData;
-            if (deptId) filtered = filtered.filter(c => c.department_id == deptId);
+            if (deptId) filtered = filtered.filter(c => c.department_name == deptId);
             if (query) filtered = filtered.filter(c =>
                 (c.course_code + ' ' + c.course_name + ' ' + (c.department_name || '') + ' ' + (c.lecturer_name || '')).toLowerCase().includes(query)
             );
@@ -265,7 +278,7 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
             document.getElementById('courseCode').value = course.course_code;
             document.getElementById('courseName').value = course.course_name;
             document.getElementById('creditHours').value = course.credit_hours;
-            document.getElementById('courseDepartment').value = course.department_id || '';
+            document.getElementById('courseDepartment').value = course.department_name || '';
             document.getElementById('courseLecturer').value = course.lecturer_name || '';
             document.getElementById('formTitle').textContent = 'Edit Course';
             document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Course';
@@ -289,7 +302,7 @@ $depts = $db->query("SELECT * FROM departments ORDER BY department_name")->fetch
                 course_code: document.getElementById('courseCode').value.trim(),
                 course_name: document.getElementById('courseName').value.trim(),
                 credit_hours: Number(document.getElementById('creditHours').value),
-                department_id: Number(document.getElementById('courseDepartment').value) || null,
+                department_name: document.getElementById('courseDepartment').value || null,
                 lecturer_name: document.getElementById('courseLecturer').value.trim()
             };
             if (courseId) payload.course_id = Number(courseId);

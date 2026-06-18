@@ -384,11 +384,23 @@ $user_name = $_SESSION['name'];
             btn.disabled = true;
             btn.innerHTML = '<div class="loading-spinner" style="width:14px;height:14px;border-width:2px;"></div>';
             try {
-                const response = await fetch('../../api/attendance/mark.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ student_id: studentId, course_id: courseId, date: date, status: status })
-                });
+                const checkRes = await fetch('../../api/attendance/get.php?' + new URLSearchParams({ student_id: studentId, course_id: courseId, date: date }));
+                const checkData = await checkRes.json();
+                const existing = checkData.success && checkData.data ? (checkData.data.records || checkData.data) : [];
+                let response;
+                if (existing.length > 0) {
+                    response = await fetch('../../api/attendance/update.php?id=' + existing[0].attendance_id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: status })
+                    });
+                } else {
+                    response = await fetch('../../api/attendance/mark.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ student_id: studentId, course_id: courseId, date: date, status: status })
+                    });
+                }
                 const data = await response.json();
                 if (data.success) {
                     const container = btn.parentElement;
@@ -434,11 +446,23 @@ $user_name = $_SESSION['name'];
                     );
                     if (!studentBtn) continue;
                     try {
-                        const res = await fetch('../../api/attendance/mark.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ student_id: student.student_id, course_id: courseId, date: date, status: status })
-                        });
+                        const checkRes = await fetch('../../api/attendance/get.php?' + new URLSearchParams({ student_id: student.student_id, course_id: courseId, date: date }));
+                        const checkData = await checkRes.json();
+                        const existing = checkData.success && checkData.data ? (checkData.data.records || checkData.data) : [];
+                        let res;
+                        if (existing.length > 0) {
+                            res = await fetch('../../api/attendance/update.php?id=' + existing[0].attendance_id, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: status })
+                            });
+                        } else {
+                            res = await fetch('../../api/attendance/mark.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ student_id: student.student_id, course_id: courseId, date: date, status: status })
+                            });
+                        }
                         const result = await res.json();
                         if (result.success) {
                             marked++;
@@ -458,7 +482,7 @@ $user_name = $_SESSION['name'];
 
         async function loadAttendanceRecords() {
             const tbody = document.getElementById('attendanceTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="loading-spinner"></div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="loading-spinner"></div></td></tr>';
             try {
                 const search = document.getElementById('attendanceSearch').value.trim();
                 let url = '../../api/attendance/get.php?all=true';

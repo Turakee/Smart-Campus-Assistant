@@ -35,13 +35,21 @@ try {
         jsonResponse([], false, "Course name \"{$name}\" already exists", 409);
     }
 
+    $deptId = isset($data['department_id']) ? (int)$data['department_id'] : null;
+    if ($deptId === null && !empty($data['department_name'])) {
+        $deptStmt = $db->prepare("SELECT department_id FROM departments WHERE department_name = :name");
+        $deptStmt->execute([':name' => $data['department_name']]);
+        $deptRow = $deptStmt->fetch();
+        $deptId = $deptRow ? (int)$deptRow['department_id'] : null;
+    }
+
     $stmt = $db->prepare("INSERT INTO courses (course_name, course_code, credit_hours, lecturer_name, department_id) VALUES (:name, :code, :credits, :lecturer, :dept_id)");
     $stmt->execute([
         ':name' => sanitizeInput($name),
         ':code' => sanitizeInput($code),
         ':credits' => isset($data['credit_hours']) ? (int)$data['credit_hours'] : null,
         ':lecturer' => isset($data['lecturer_name']) ? sanitizeInput($data['lecturer_name']) : null,
-        ':dept_id' => isset($data['department_id']) ? (int)$data['department_id'] : null
+        ':dept_id' => $deptId
     ]);
 
     jsonResponse(['course_id' => $db->lastInsertId()], true, 'Course created successfully', 201);

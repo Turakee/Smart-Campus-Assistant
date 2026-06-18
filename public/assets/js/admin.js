@@ -231,8 +231,6 @@ async function fetchStudents() {
             }
         }
         
-        renderStudentTable();
-        
         if(loading) loading.style.display = 'none';
     } catch (err) {
         console.error('Error fetching students:', err);
@@ -243,141 +241,6 @@ async function fetchStudents() {
         if(studentSelect) {
             studentSelect.innerHTML = '<option value="">Failed to load</option>';
         }
-    }
-}
-
-function renderStudentTable() {
-    const body = document.getElementById('studentsBody');
-    if(!body) return;
-    const filter = document.getElementById('studentSearch') ? document.getElementById('studentSearch').value.trim().toLowerCase() : '';
-    const filtered = students.filter(s => {
-        const combined = (s.full_name + ' ' + s.username + ' ' + s.email + ' ' + (s.department || '')).toLowerCase();
-        return combined.includes(filter);
-    });
-    body.innerHTML = filtered.length ? filtered.map(student => {
-        const activeBadge = student.is_active == 1 ? '<span class="status-badge present">Active</span>' : '<span class="status-badge absent">Inactive</span>';
-        return `<tr>
-            <td>${student.student_id}</td>
-            <td>${escapeHtml(student.full_name)}</td>
-            <td>${escapeHtml(student.username)}</td>
-            <td>${escapeHtml(student.email)}</td>
-            <td>${escapeHtml(student.department || '')}</td>
-            <td>${student.level || ''}</td>
-            <td>${student.enrollment_year || ''}</td>
-            <td>${activeBadge}</td>
-            <td>
-                <button class="btn btn-primary btn-sm" style="margin-right:4px;" onclick="openStudentModal(${student.student_id})">Edit</button>
-                <button class="btn btn-sm" style="background:#f59e0b;color:white; margin-right:4px;" onclick="toggleActive(${student.student_id}, ${student.is_active == 1 ? 0 : 1})">${student.is_active == 1 ? 'Deactivate' : 'Activate'}</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.student_id})">Delete</button>
-            </td>
-        </tr>`;
-    }).join('') : '<tr><td colspan="9" style="text-align:center; color: var(--gray);">No students found.</td></tr>';
-}
-
-function openStudentModal(studentId = null) {
-    const modal = document.getElementById('studentModal');
-    const form = document.getElementById('modalForm');
-    const title = document.getElementById('modalTitle');
-    const submitBtn = document.getElementById('modalSubmitBtn');
-    const passwordField = document.getElementById('modal_password');
-    if(!modal) return;
-    form.reset();
-    if (studentId && studentsById[studentId]) {
-        const student = studentsById[studentId];
-        title.textContent = 'Edit Student';
-        submitBtn.textContent = 'Update Student';
-        passwordField.required = false;
-        passwordField.style.display = 'none';
-        document.getElementById('modal_student_id').value = student.student_id;
-        document.getElementById('modal_full_name').value = student.full_name;
-        document.getElementById('modal_username').value = student.username;
-        document.getElementById('modal_email').value = student.email;
-        document.getElementById('modal_department').value = student.department || '';
-        document.getElementById('modal_level').value = student.level || '';
-        document.getElementById('modal_enrollment_year').value = student.enrollment_year || '';
-        document.getElementById('modal_is_active').checked = student.is_active == 1;
-    } else {
-        title.textContent = 'Add Student';
-        submitBtn.textContent = 'Add Student';
-        passwordField.required = true;
-        passwordField.style.display = 'block';
-        document.getElementById('modal_student_id').value = '';
-        document.getElementById('modal_is_active').checked = true;
-    }
-    modal.style.display = 'flex';
-}
-
-async function saveStudent() {
-    const student_id = document.getElementById('modal_student_id').value;
-    const isEdit = student_id !== '';
-    const basePayload = {
-        full_name: document.getElementById('modal_full_name').value.trim(),
-        username: document.getElementById('modal_username').value.trim(),
-        email: document.getElementById('modal_email').value.trim(),
-        department: document.getElementById('modal_department').value.trim(),
-        level: document.getElementById('modal_level').value ? parseInt(document.getElementById('modal_level').value) : null,
-        enrollment_year: document.getElementById('modal_enrollment_year').value ? parseInt(document.getElementById('modal_enrollment_year').value) : null,
-        is_active: document.getElementById('modal_is_active').checked ? 1 : 0
-    };
-    try {
-        let response, result;
-        if (isEdit) {
-            const payload = { ...basePayload, student_id: parseInt(student_id) };
-            response = await fetch('../../api/student/update.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-        } else {
-            const password = document.getElementById('modal_password').value;
-            const payload = { ...basePayload, password: password, role: 'student' };
-            response = await fetch('../../api/auth/register.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-        }
-        result = await response.json();
-        if (!result.success) throw new Error(result.message);
-        showToast(isEdit ? 'Student updated successfully' : 'Student added successfully');
-        closeStudentModal();
-        await fetchStudents();
-    } catch (err) {
-        showToast('Error saving student: ' + err.message, 'error');
-    }
-}
-
-async function toggleActive(student_id, targetState) {
-    if (!confirm('Change active status for student #' + student_id + '?')) return;
-    try {
-        const response = await fetch('../../api/student/update.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ student_id, is_active: targetState })
-        });
-        const result = await response.json();
-        if (!result.success) throw new Error(result.message);
-        showToast('Status updated successfully');
-        await fetchStudents();
-    } catch (err) {
-        showToast('Error updating status: ' + err.message, 'error');
-    }
-}
-
-async function deleteStudent(student_id) {
-    if (!confirm('Are you sure you want to delete student #' + student_id + '? This is irreversible.')) return;
-    try {
-        const response = await fetch('../../api/student/delete.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ student_id })
-        });
-        const result = await response.json();
-        if (!result.success) throw new Error(result.message);
-        showToast('Student deleted successfully');
-        await fetchStudents();
-    } catch (err) {
-        showToast('Error deleting student: ' + err.message, 'error');
     }
 }
 
@@ -457,7 +320,6 @@ function renderRiskStudents(data) {
                 <strong>${escapeHtml(student.student_name)}</strong>
                 <div style="font-size: 12px; color: var(--gray);">Attendance: ${student.attendance_percentage || 0}%</div>
             </div>
-            <button class="btn btn-primary" style="padding: 8px 16px;" onclick="contactStudent(${student.student_id}, '${escapeHtml(student.student_name)}')"><i class="fas fa-envelope"></i> Contact</button>
         </div>
     `).join('');
 }
@@ -712,52 +574,6 @@ async function unenroll(studentId, courseId, name) {
     } else {
         showToast(data.message || 'Failed to unenroll student', 'error');
     }
-}
-
-// Schedule Management (Admin)
-async function fetchSchedules() {
-    const msg = document.getElementById('loadingMessage');
-    if(msg) {
-        msg.textContent = 'Loading schedules...';
-        msg.style.display = 'block';
-    }
-    try {
-        const response = await fetch('../../api/schedule/get.php');
-        const result = await response.json();
-        if (!result.success) throw new Error(result.message);
-        schedules = result.data;
-        scheduleById = {};
-        schedules.forEach(s => { scheduleById[s.schedule_id] = s; });
-        renderScheduleTable();
-        if(msg) msg.style.display = 'none';
-    } catch (err) {
-        if(msg) msg.textContent = 'Failed to load schedules: ' + err.message;
-    }
-}
-
-function renderScheduleTable() {
-    const body = document.getElementById('scheduleBody');
-    if(!body) return;
-    const filter = document.getElementById('scheduleSearch') ? document.getElementById('scheduleSearch').value.trim().toLowerCase() : '';
-    const filtered = schedules.filter(s => {
-        const combined = `${s.course_name} ${s.course_code} ${s.day_of_week} ${s.start_time} ${s.end_time} ${s.room_number || ''}`.toLowerCase();
-        return combined.includes(filter);
-    });
-    body.innerHTML = filtered.length ? filtered.map(s => `
-        <tr>
-            <td>${s.schedule_id}</td>
-            <td>${escapeHtml(s.course_name)}</td>
-            <td>${escapeHtml(s.course_code)}</td>
-            <td>${escapeHtml(s.day_of_week)}</td>
-            <td>${escapeHtml(s.start_time)}</td>
-            <td>${escapeHtml(s.end_time)}</td>
-            <td>${escapeHtml(s.room_number || '')}</td>
-            <td>
-                <button class="btn btn-primary btn-sm" style="margin-right:4px;" onclick="openScheduleModal(${s.schedule_id})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteSchedule(${s.schedule_id})">Delete</button>
-            </td>
-        </tr>`).join('')
-        : '<tr><td colspan="8" style="text-align:center; color: var(--gray);">No schedules found.</td></tr>';
 }
 
 // Logout & Sidebar

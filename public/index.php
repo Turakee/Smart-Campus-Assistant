@@ -74,16 +74,28 @@
                         <label><i class="fas fa-building"></i> Department</label>
                         <select id="regDept">
                             <option value="">Select Department</option>
+                            <option value="Artificial Intelligence">Artificial Intelligence</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Business Administration">Business Administration</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Cyber Security">Cyber Security</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Information Systems">Information Systems</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Science">Science</option>
+                            <option value="Software Engineering">Software Engineering</option>
                         </select>
                     </div>
                     <div class="form-group" id="levelGroup">
                         <label><i class="fas fa-graduation-cap"></i> Level</label>
                         <select id="regLevel">
-                            <option value="100">100 Level</option>
-                            <option value="200">200 Level</option>
-                            <option value="300">300 Level</option>
-                            <option value="400">400 Level</option>
-                            <option value="500">500 Level</option>
+                            <option value="100">Level 1</option>
+                            <option value="200">Level 2</option>
+                            <option value="300">Level 3</option>
+                            <option value="400">Level 4</option>
+                            <option value="500">Level 5</option>
                         </select>
                     </div>
                 <button type="submit" class="btn-primary">

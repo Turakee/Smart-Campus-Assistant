@@ -66,15 +66,7 @@ try {
     // Set system admin flag
     $_SESSION['is_system_admin'] = ($role === 'system_admin') || !empty($user['is_system_admin']);
     
-    // Load admin gender for enrollment permission checks
-    if ($role === 'administrator') {
-        $genderStmt = $db->prepare("SELECT gender FROM administrators WHERE user_id = :uid");
-        $genderStmt->execute([':uid' => $user['user_id']]);
-        $_SESSION['admin_gender'] = $genderStmt->fetchColumn();
-    } elseif ($role === 'system_admin') {
-        $_SESSION['admin_gender'] = null;
-    }
-    
+  
     // Determine Dashboard Redirect (absolute path from document root)
     $basePath = rtrim(dirname(dirname(dirname($_SERVER['SCRIPT_NAME']))), '/');
     $redirect = $basePath . '/public/student/dashboard.php';
