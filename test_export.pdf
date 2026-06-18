@@ -1,0 +1,87 @@
+%PDF-1.4
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
+2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj
+3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Resources<</Font<</F1 4 0 R/F2 5 0 R>>>>/Contents 6 0 R>>endobj
+4 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj
+5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold>>endobj
+6 0 obj<</Length 192>>stream
+0.2 0.35 0.6 rg 0 770 595 72 re f
+BT /F2 20 Tf 50 808 Td (Attendance Report) Tj ET
+BT /F1 9 Tf 50 790 Td (Smart Campus Assistant - Attendance Report) Tj ET
+0.4 0.55 0.8 RG 50 769 495 0.5 re S
+
+0.95 0.97 1 rg 50 740 495 46 re f
+0.7 0.8 0.9 RG 50 740 495 46 re S
+BT /F2 8 Tf 60 772 Td (Total Records:) Tj ET
+BT /F1 8 Tf 110 772 Td (50) Tj ET
+BT /F2 8 Tf 225 772 Td (Present:) Tj ET
+BT /F1 8 Tf 275 772 Td (42) Tj ET
+BT /F2 8 Tf 390 772 Td (Late:) Tj ET
+BT /F1 8 Tf 440 772 Td (3) Tj ET
+BT /F2 8 Tf 60 752 Td (Absent:) Tj ET
+BT /F1 8 Tf 110 752 Td (5) Tj ET
+BT /F2 8 Tf 225 752 Td (Excused:) Tj ET
+BT /F1 8 Tf 275 752 Td (0) Tj ET
+BT /F2 8 Tf 390 752 Td (Attendance Rate:) Tj ET
+BT /F1 8 Tf 440 752 Td (84%) Tj ET
+BT /F1 9 Tf 50 730 Td (Generated: 2026-06-13 08:00) Tj ET
+0.2 0.35 0.6 rg 50 708 192 14 re f
+BT /F2 9 Tf 50 711 Td (Date) Tj ET
+BT /F2 9 Tf 70 711 Td (Student) Tj ET
+BT /F2 9 Tf 114 711 Td (Username) Tj ET
+BT /F2 9 Tf 156 711 Td (Course) Tj ET
+BT /F2 9 Tf 190 711 Td (Code) Tj ET
+BT /F2 9 Tf 220 711 Td (Status) Tj ET
+0.95 0.95 0.97 rg 50 694 192 12 re f
+BT /F1 8 Tf 50 696 Td (2026-06-10) Tj ET
+0.85 0.85 0.85 RG 50 694 20 12 re S
+BT /F1 8 Tf 70 696 Td (John Doe) Tj ET
+0.85 0.85 0.85 RG 70 694 44 12 re S
+BT /F1 8 Tf 114 696 Td (jdoe) Tj ET
+0.85 0.85 0.85 RG 114 694 42 12 re S
+BT /F1 8 Tf 156 696 Td (CS 101) Tj ET
+0.85 0.85 0.85 RG 156 694 34 12 re S
+BT /F1 8 Tf 190 696 Td (CSC101) Tj ET
+0.85 0.85 0.85 RG 190 694 30 12 re S
+BT /F1 8 Tf 220 696 Td (present) Tj ET
+0.85 0.85 0.85 RG 220 694 22 12 re S
+BT /F1 8 Tf 50 684 Td (2026-06-10) Tj ET
+0.85 0.85 0.85 RG 50 682 20 12 re S
+BT /F1 8 Tf 70 684 Td (Jane Smith) Tj ET
+0.85 0.85 0.85 RG 70 682 44 12 re S
+BT /F1 8 Tf 114 684 Td (jsmith) Tj ET
+0.85 0.85 0.85 RG 114 682 42 12 re S
+BT /F1 8 Tf 156 684 Td (CS 101) Tj ET
+0.85 0.85 0.85 RG 156 682 34 12 re S
+BT /F1 8 Tf 190 684 Td (CSC101) Tj ET
+0.85 0.85 0.85 RG 190 682 30 12 re S
+BT /F1 8 Tf 220 684 Td (late) Tj ET
+0.85 0.85 0.85 RG 220 682 22 12 re S
+0.95 0.95 0.97 rg 50 670 192 12 re f
+BT /F1 8 Tf 50 672 Td (2026-06-09) Tj ET
+0.85 0.85 0.85 RG 50 670 20 12 re S
+BT /F1 8 Tf 70 672 Td (Bob Wilson) Tj ET
+0.85 0.85 0.85 RG 70 670 44 12 re S
+BT /F1 8 Tf 114 672 Td (bwilson) Tj ET
+0.85 0.85 0.85 RG 114 670 42 12 re S
+BT /F1 8 Tf 156 672 Td (Math 101) Tj ET
+0.85 0.85 0.85 RG 156 670 34 12 re S
+BT /F1 8 Tf 190 672 Td (MTH101) Tj ET
+0.85 0.85 0.85 RG 190 670 30 12 re S
+BT /F1 8 Tf 220 672 Td (absent) Tj ET
+0.85 0.85 0.85 RG 220 670 22 12 re S
+BT /F1 8 Tf 50 660 Td (2026-06-09) Tj ET
+0.85 0.85 0.85 RG 50 658 20 12 re S
+BT /F1 8 Tf 70 660 Td (Alice Brown) Tj ET
+0.85 0.85 0.85 RG 70 658 44 12 re S
+BT /F1 8 Tf 114 660 Td (abrown) Tj ET
+0.85 0.85 0.85 RG 114 658 42 12 re S
+BT /F1 8 Tf 156 660 Td (Math 101) Tj ET
+0.85 0.85 0.85 RG 156 658 34 12 re S
+BT /F1 8 Tf 190 660 Td (MTH101) Tj ET
+0.85 0.85 0.85 RG 190 658 30 12 re S
+BT /F1 8 Tf 220 660 Td (present) Tj ET
+0.85 0.85 0.85 RG 220 658 22 12 re S
+endstream
+endobj
+xref\n0 7\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \n0000000101 00000 n \n0000000220 00000 n \n0000000281 00000 n \n0000000347 00000 n \ntrailer<</Size 7/Root 1 0 R>>\nstartxref\n3314\n%%EOF

@@ -1,0 +1,8 @@
+.env
+logs/
+uploads/
+ai-engine/input/
+ai-engine/output/
+ai-engine/bin/*.exe
+*.log
+config/settings.json
