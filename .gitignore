@@ -6,3 +6,4 @@ ai-engine/output/
 ai-engine/bin/*.exe
 *.log
 config/settings.json
+null

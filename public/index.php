@@ -86,16 +86,17 @@
                             <option value="Information Technology">Information Technology</option>
                             <option value="Science">Science</option>
                             <option value="Software Engineering">Software Engineering</option>
+                            <option value="General Studies">General Studies</option>
                         </select>
                     </div>
                     <div class="form-group" id="levelGroup">
                         <label><i class="fas fa-graduation-cap"></i> Level</label>
                         <select id="regLevel">
-                            <option value="100">Level 1</option>
-                            <option value="200">Level 2</option>
-                            <option value="300">Level 3</option>
-                            <option value="400">Level 4</option>
-                            <option value="500">Level 5</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4</option>
+                            <option value="5">Level 5</option>
                         </select>
                     </div>
                 <button type="submit" class="btn-primary">

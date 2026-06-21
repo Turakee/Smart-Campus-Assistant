@@ -58,7 +58,7 @@ try {
     // Insert Student Profile if role is student
     $fullName = !empty($data['full_name']) ? $data['full_name'] : $data['username'];
     $department = !empty($data['department']) ? $data['department'] : 'General';
-    $level = !empty($data['level']) ? (int)$data['level'] : 100;
+    $level = !empty($data['level']) ? (int)$data['level'] : 1;
     
     if ($role === 'student') {
         $studentQuery = "INSERT INTO students (user_id, full_name, department, level, enrollment_year) 

@@ -91,7 +91,7 @@ class Validator
 
     public static function academicLevel($value, $fieldName = 'level')
     {
-        return self::inArray($value, [100, 200, 300, 400], $fieldName);
+        return self::inArray($value, [1, 2, 3, 4, 5], $fieldName);
     }
 
     public static function attendanceStatus($value, $fieldName = 'status')

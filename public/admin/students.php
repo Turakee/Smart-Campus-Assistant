@@ -214,6 +214,7 @@ if ($db) {
                                 <option value="Engineering">Engineering</option>
                                 <option value="Arts">Arts</option>
                                 <option value="Science">Science</option>
+                                <option value="General Studies">General Studies</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
@@ -329,7 +330,7 @@ if ($db) {
                     <td>${escapeHtml(student.username)}</td>
                     <td style="font-size: 13px;">${escapeHtml(student.email)}</td>
                     <td>${student.department ? '<span class="status-badge info">' + escapeHtml(student.department) + '</span>' : '<span style="color: var(--gray-light);">—</span>'}</td>
-                    <td><strong>${student.level || '—'}</strong></td>
+                    <td><strong>Level ${student.level || '—'}</strong></td>
                     <td>${student.enrollment_year || '—'}</td>
                     <td>${activeBadge}</td>
                     <td>

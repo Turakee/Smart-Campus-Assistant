@@ -43,18 +43,20 @@ try {
         jsonResponse([], false, "No courses found for department: $department", 404);
     }
 
-    // For each student-course pair, insert if not already enrolled
-    $insertStmt = $db->prepare("INSERT IGNORE INTO student_courses (student_id, course_id, enrolled_at) VALUES (:sid, :cid, NOW())");
+    // For each student-course pair, insert only if not already enrolled
+    $checkStmt = $db->prepare("SELECT 1 FROM student_courses WHERE student_id = :sid AND course_id = :cid");
+    $insertStmt = $db->prepare("INSERT INTO student_courses (student_id, course_id, enrolled_at) VALUES (:sid, :cid, NOW())");
     $created = 0;
     $skipped = 0;
 
     foreach ($students as $sid) {
         foreach ($courses as $cid) {
-            $insertStmt->execute([':sid' => $sid, ':cid' => $cid]);
-            if ($insertStmt->rowCount() > 0) {
-                $created++;
-            } else {
+            $checkStmt->execute([':sid' => $sid, ':cid' => $cid]);
+            if ($checkStmt->fetch()) {
                 $skipped++;
+            } else {
+                $insertStmt->execute([':sid' => $sid, ':cid' => $cid]);
+                $created++;
             }
         }
     }

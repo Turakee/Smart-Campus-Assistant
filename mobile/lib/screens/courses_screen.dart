@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/course_provider.dart';
+import '../providers/auth_provider.dart';
 import '../models/course.dart';
 import '../theme.dart';
 
@@ -36,6 +37,9 @@ class _CoursesScreenState extends State<CoursesScreen>
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CourseProvider>();
+    final auth = context.watch<AuthProvider>();
+    final isAdmin =
+        auth.user?.role == 'administrator' || auth.user?.role == 'system_admin';
     final enrolledIds = provider.myCourses.map((c) => c.courseId).toSet();
 
     return Scaffold(
@@ -47,30 +51,34 @@ class _CoursesScreenState extends State<CoursesScreen>
             onPressed: _loadData,
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Enrolled'),
-            Tab(text: 'Available'),
-          ],
-        ),
+        bottom: isAdmin
+            ? TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Enrolled'),
+                  Tab(text: 'Available'),
+                ],
+              )
+            : null,
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildEnrolledTab(provider, enrolledIds),
-                _buildAvailableTab(provider, enrolledIds),
-              ],
-            ),
+          : isAdmin
+              ? TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildEnrolledTab(provider, enrolledIds, isAdmin),
+                    _buildAvailableTab(provider, enrolledIds, isAdmin),
+                  ],
+                )
+              : _buildStudentView(provider),
     );
   }
 
-  Widget _buildEnrolledTab(CourseProvider provider, Set<int> enrolledIds) {
+  Widget _buildStudentView(CourseProvider provider) {
     if (provider.myCourses.isEmpty) {
       return _emptyState(Icons.library_books_rounded, 'No courses enrolled',
-          'Browse available courses and enroll to get started');
+          'Your enrolled courses will appear here');
     }
 
     final totalCredits =
@@ -79,7 +87,6 @@ class _CoursesScreenState extends State<CoursesScreen>
     return RefreshIndicator(
       onRefresh: () async {
         await provider.loadMyCourses();
-        await provider.loadAvailableCourses();
       },
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -122,14 +129,78 @@ class _CoursesScreenState extends State<CoursesScreen>
             ),
           ),
           const SizedBox(height: 16),
-          ...provider.myCourses.map((course) =>
-              _courseCard(course, isEnrolled: true, provider: provider)),
+          ...provider.myCourses.map((course) => _courseCard(course,
+              isEnrolled: true, provider: provider, isAdmin: false)),
         ],
       ),
     );
   }
 
-  Widget _buildAvailableTab(CourseProvider provider, Set<int> enrolledIds) {
+  Widget _buildEnrolledTab(
+      CourseProvider provider, Set<int> enrolledIds, bool isAdmin) {
+    if (provider.myCourses.isEmpty) {
+      return _emptyState(Icons.library_books_rounded, 'No courses enrolled',
+          'Browse available courses and enroll to get started');
+    }
+
+    final totalCredits =
+        provider.myCourses.fold<int>(0, (sum, c) => sum + (c.creditHours ?? 0));
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        await provider.loadMyCourses();
+        if (isAdmin) await provider.loadAvailableCourses();
+      },
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                  colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
+              borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${provider.myCourses.length} Courses',
+                          style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                      Text('$totalCredits Total Credits',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.8))),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.school_rounded,
+                      color: Colors.white, size: 28),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...provider.myCourses.map((course) => _courseCard(course,
+              isEnrolled: true, provider: provider, isAdmin: isAdmin)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvailableTab(
+      CourseProvider provider, Set<int> enrolledIds, bool isAdmin) {
     if (provider.availableCourses.isEmpty) {
       return _emptyState(Icons.search_rounded, 'No courses available',
           'All available courses are displayed here');
@@ -144,14 +215,17 @@ class _CoursesScreenState extends State<CoursesScreen>
         padding: const EdgeInsets.all(16),
         children: provider.availableCourses.map((course) {
           final enrolled = enrolledIds.contains(course.courseId);
-          return _courseCard(course, isEnrolled: enrolled, provider: provider);
+          return _courseCard(course,
+              isEnrolled: enrolled, provider: provider, isAdmin: isAdmin);
         }).toList(),
       ),
     );
   }
 
   Widget _courseCard(Course course,
-      {required bool isEnrolled, required CourseProvider provider}) {
+      {required bool isEnrolled,
+      required CourseProvider provider,
+      bool isAdmin = false}) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(
@@ -208,29 +282,30 @@ class _CoursesScreenState extends State<CoursesScreen>
                 ],
               ],
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: isEnrolled
-                    ? () => _confirmUnenroll(context, course, provider)
-                    : () => _enroll(context, course, provider),
-                icon: Icon(
-                    isEnrolled
-                        ? Icons.exit_to_app_rounded
-                        : Icons.add_circle_outline_rounded,
-                    size: 18),
-                label: Text(isEnrolled ? 'Drop Course' : 'Enroll'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isEnrolled
-                      ? AppTheme.error.withOpacity(0.1)
-                      : AppTheme.primary,
-                  foregroundColor: isEnrolled ? AppTheme.error : Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+            if (isAdmin) const SizedBox(height: 12),
+            if (isAdmin)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: isEnrolled
+                      ? () => _confirmUnenroll(context, course, provider)
+                      : () => _enroll(context, course, provider),
+                  icon: Icon(
+                      isEnrolled
+                          ? Icons.exit_to_app_rounded
+                          : Icons.add_circle_outline_rounded,
+                      size: 18),
+                  label: Text(isEnrolled ? 'Drop Course' : 'Enroll'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isEnrolled
+                        ? AppTheme.error.withOpacity(0.1)
+                        : AppTheme.primary,
+                    foregroundColor: isEnrolled ? AppTheme.error : Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

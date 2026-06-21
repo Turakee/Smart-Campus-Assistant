@@ -136,6 +136,7 @@ $user_name = $_SESSION['name'];
                                     <option value="Information Technology">Information Technology</option>
                                     <option value="Science">Science</option>
                                     <option value="Software Engineering">Software Engineering</option>
+                                    <option value="General Studies">General Studies</option>
                                 </select>
                             </div>
                         </div>
@@ -172,6 +173,7 @@ $user_name = $_SESSION['name'];
                             <option value="Information Technology">Information Technology</option>
                             <option value="Science">Science</option>
                             <option value="Software Engineering">Software Engineering</option>
+                            <option value="General Studies">General Studies</option>
                         </select>
                     </div>
                     <div class="table-wrap">

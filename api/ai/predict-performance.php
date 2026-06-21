@@ -38,7 +38,8 @@ try {
             COUNT(*) as total_classes,
             COALESCE(SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END), 0) as present_count,
             COALESCE(SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END), 0) as absent_count,
-            COALESCE(SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END), 0) as late_count
+            COALESCE(SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END), 0) as late_count,
+            COALESCE(SUM(CASE WHEN status = 'excused' THEN 1 ELSE 0 END), 0) as excused_count
         FROM attendance 
         WHERE student_id = :sid
     ");
@@ -47,11 +48,13 @@ try {
     
     $totalClasses = $attendance['total_classes'];
     $presentCount = $attendance['present_count'];
+    $excusedCount = $attendance['excused_count'];
     $absentCount = $attendance['absent_count'];
     $lateCount = $attendance['late_count'];
+    $goodCount = $presentCount + $excusedCount;
     
-    // Calculate attendance percentage
-    $attendancePercentage = $totalClasses > 0 ? round(($presentCount / $totalClasses) * 100, 1) : 0;
+    // Calculate attendance percentage (excused counts as attended)
+    $attendancePercentage = $totalClasses > 0 ? round(($goodCount / $totalClasses) * 100, 1) : 0;
     
     // Get enrolled courses count
     $stmt = $db->prepare("SELECT COUNT(*) as course_count FROM student_courses WHERE student_id = :sid");
@@ -148,6 +151,7 @@ try {
             'attendance_percentage' => $attendancePercentage,
             'total_classes' => $totalClasses,
             'present' => $presentCount,
+            'excused' => $excusedCount,
             'absent' => $absentCount,
             'late' => $lateCount,
             'courses_enrolled' => $enrolledCourses,
@@ -188,6 +192,7 @@ try {
         'attendance_percentage' => $attendancePercentage,
         'total_classes' => $totalClasses,
         'present' => $presentCount,
+        'excused' => $excusedCount,
         'absent' => $absentCount,
         'late' => $lateCount,
         'courses_enrolled' => $enrolledCourses,

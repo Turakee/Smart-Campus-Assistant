@@ -306,7 +306,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                      '${_performance!['present'] ?? 0}/${_performance!['total_classes'] ?? 0} classes attended',
+                      '${_performance!['present'] ?? 0} present + ${_performance!['excused'] ?? 0} excused / ${_performance!['total_classes'] ?? 0} classes',
                       style: const TextStyle(
                           fontSize: 13, color: AppTheme.textSecondary)),
                   Text(

@@ -19,7 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   String _department = 'Computer Science';
-  int _level = 100;
+  int _level = 1;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -37,9 +37,10 @@ class _RegisterScreenState extends State<RegisterScreen>
     'Information Technology',
     'Science',
     'Software Engineering',
+    'General Studies',
   ];
 
-  final List<int> _levels = [100, 200, 300, 400, 500];
+  final List<int> _levels = [1, 2, 3, 4, 5];
 
   @override
   void initState() {
@@ -281,7 +282,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     items: _levels
                         .map((l) =>
-                            DropdownMenuItem(value: l, child: Text('$l Level')))
+                            DropdownMenuItem(value: l, child: Text('Level $l')))
                         .toList(),
                     onChanged: (v) {
                       if (v != null) setState(() => _level = v);

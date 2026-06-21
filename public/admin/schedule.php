@@ -17,7 +17,8 @@ $departments = [
     ['name' => 'Information Systems', 'code' => 'InfoSys'],
     ['name' => 'Information Technology', 'code' => 'IT'],
     ['name' => 'Science', 'code' => 'Science'],
-    ['name' => 'Software Engineering', 'code' => 'SWEng']
+    ['name' => 'Software Engineering', 'code' => 'SWEng'],
+    ['name' => 'General Studies', 'code' => 'GST']
 ];
 ?>
 <!DOCTYPE html>

@@ -91,7 +91,7 @@ if (!$profile) {
                             </div>
                             <div style="display: flex; justify-content: space-between; padding: 12px 16px; background: var(--light); border-radius: var(--radius);">
                                 <span style="color: var(--gray);"><i class="fas fa-layer-group"></i> Level</span>
-                                <span style="font-weight: 600;" id="displayLevel"><?php echo htmlspecialchars($profile['level'] ?? 'Not set'); ?></span>
+                                <span style="font-weight: 600;" id="displayLevel">Level <?php echo htmlspecialchars($profile['level'] ?? 'Not set'); ?></span>
                             </div>
                             <div style="display: flex; justify-content: space-between; padding: 12px 16px; background: var(--light); border-radius: var(--radius);">
                                 <span style="color: var(--gray);"><i class="fas fa-calendar"></i> Enrollment Year</span>
@@ -253,7 +253,7 @@ if (!$profile) {
                 if (result.success) {
                     showToast('Profile updated successfully!', 'success');
                     document.getElementById('displayDepartment').textContent = data.department || 'Not set';
-                    document.getElementById('displayLevel').textContent = data.level || 'Not set';
+                    document.getElementById('displayLevel').textContent = 'Level ' + (data.level || 'Not set');
                     toggleEdit();
                 } else {
                     showToast(result.message || 'Failed to update profile', 'error');

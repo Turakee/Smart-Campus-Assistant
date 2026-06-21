@@ -141,10 +141,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) setState(() => _changingPassword = false);
   }
 
-  void _logout() async {
-    await context.read<AuthProvider>().logout();
-    if (mounted) {
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+  Future<void> _logout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusLg)),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await context.read<AuthProvider>().logout();
+      if (mounted) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (route) => false);
+      }
     }
   }
 
@@ -316,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'Level',
                 _levelController.text.isEmpty
                     ? 'Not set'
-                    : '${_levelController.text} Level'),
+                    : 'Level ${_levelController.text}'),
             if (_enrollmentYear.isNotEmpty) ...[
               const Divider(height: 20),
               _infoRow('Enrollment Year', _enrollmentYear),

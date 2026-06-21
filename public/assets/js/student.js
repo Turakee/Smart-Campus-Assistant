@@ -36,6 +36,7 @@ function toggleSidebar() {
 }
 
 async function logout() {
+    if (!confirm('Logout?')) return;
     try {
         await apiCall('../../api/auth/logout.php', { method: 'POST' });
     } catch (e) {}
@@ -528,6 +529,7 @@ async function runPerformancePrediction() {
                 <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;">
                     <div style="padding:8px 12px;background:var(--light);border-radius:6px;text-align:center;"><strong>${d.total_classes || 0}</strong><br><small>Classes</small></div>
                     <div style="padding:8px 12px;background:var(--light);border-radius:6px;text-align:center;"><strong>${d.present || 0}</strong><br><small>Present</small></div>
+                    <div style="padding:8px 12px;background:var(--light);border-radius:6px;text-align:center;"><strong>${d.excused || 0}</strong><br><small>Excused</small></div>
                     <div style="padding:8px 12px;background:var(--light);border-radius:6px;text-align:center;"><strong>${d.absent || 0}</strong><br><small>Absent</small></div>
                     <div style="padding:8px 12px;background:var(--light);border-radius:6px;text-align:center;"><strong>${d.late || 0}</strong><br><small>Late</small></div>
                 </div>

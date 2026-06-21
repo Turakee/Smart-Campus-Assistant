@@ -192,7 +192,8 @@ function handleAttendanceQuery($query, $db) {
             COUNT(*) as total,
             SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present,
             SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as absent,
-            SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END) as late
+            SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END) as late,
+            SUM(CASE WHEN status = 'excused' THEN 1 ELSE 0 END) as excused
         FROM attendance 
         WHERE student_id = :sid
     ");
@@ -201,13 +202,15 @@ function handleAttendanceQuery($query, $db) {
     
     $total = (int)($stats['total'] ?: 0);
     $present = (int)($stats['present'] ?: 0);
-    $percentage = $total > 0 ? round(($present / $total) * 100, 1) : 0;
+    $excused = (int)($stats['excused'] ?: 0);
+    $good = $present + $excused;
+    $percentage = $total > 0 ? round(($good / $total) * 100, 1) : 0;
     
     if ($total === 0) {
         return [
             'intent' => 'attendance_query',
             'response' => 'No attendance records found yet. Once your classes begin, attendance will be recorded here.',
-            'details' => ['Present: 0', 'Absent: 0', 'Late: 0'],
+            'details' => ['Present: 0', 'Absent: 0', 'Late: 0', 'Excused: 0'],
             'suggestions' => ['View my schedule', 'Check my courses']
         ];
     }
@@ -223,16 +226,18 @@ function handleAttendanceQuery($query, $db) {
     return [
         'intent' => 'attendance_query',
         'response' => sprintf(
-            '%s You have attended %d out of %d classes (%.1f%%).',
+            '%s You have %d present and %d excused out of %d classes (%.1f%%).',
             $message,
             $present,
+            $excused,
             $total,
             $percentage
         ),
         'details' => [
             'Present: ' . $present,
             'Absent: ' . (int)($stats['absent'] ?: 0),
-            'Late: ' . (int)($stats['late'] ?: 0)
+            'Late: ' . (int)($stats['late'] ?: 0),
+            'Excused: ' . (int)($stats['excused'] ?: 0)
         ],
         'suggestions' => ['View detailed attendance', 'Check risk analysis']
     ];
@@ -301,12 +306,13 @@ function handleRiskAnalysisQuery($db) {
         ];
     }
     
-    $stmt = $db->prepare("
+        $stmt = $db->prepare("
         SELECT 
             COUNT(*) as total,
             COALESCE(SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END), 0) as present,
             COALESCE(SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END), 0) as absent,
-            COALESCE(SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END), 0) as late
+            COALESCE(SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END), 0) as late,
+            COALESCE(SUM(CASE WHEN status = 'excused' THEN 1 ELSE 0 END), 0) as excused
         FROM attendance 
         WHERE student_id = :sid
     ");
@@ -316,7 +322,9 @@ function handleRiskAnalysisQuery($db) {
     $total = (int)($stats['total'] ?: 0);
     $present = (int)($stats['present'] ?: 0);
     $absent = (int)($stats['absent'] ?: 0);
-    $percentage = $total > 0 ? round(($present / $total) * 100, 1) : 0;
+    $excused = (int)($stats['excused'] ?: 0);
+    $good = $present + $excused;
+    $percentage = $total > 0 ? round(($good / $total) * 100, 1) : 0;
     
     // Check consecutive absences
     $stmt = $db->prepare("
@@ -405,7 +413,8 @@ function handleRecommendationsQuery($db) {
         SELECT 
             COUNT(*) as total,
             COALESCE(SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END), 0) as present,
-            COALESCE(SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END), 0) as absent
+            COALESCE(SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END), 0) as absent,
+            COALESCE(SUM(CASE WHEN status = 'excused' THEN 1 ELSE 0 END), 0) as excused
         FROM attendance 
         WHERE student_id = :sid
     ");
@@ -414,7 +423,9 @@ function handleRecommendationsQuery($db) {
 
     $total = (int)($stats['total'] ?: 0);
     $present = (int)($stats['present'] ?: 0);
-    $percentage = $total > 0 ? round(($present / $total) * 100, 1) : 0;
+    $excused = (int)($stats['excused'] ?: 0);
+    $good = $present + $excused;
+    $percentage = $total > 0 ? round(($good / $total) * 100, 1) : 0;
 
     $stmt = $db->prepare("
         SELECT status FROM attendance 
